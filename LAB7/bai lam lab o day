@@ -1,0 +1,33 @@
+SELECT TOP (1000) [product_id]
+      ,[product_name]
+      ,[brand_id]
+      ,[category_id]
+      ,[model_year]
+      ,[list_price]
+Into products_N1
+  FROM [PS49720].[production].[products]
+Where category_id = 1
+
+---- Bài 1: Bảng khách hàng mới ở Oakland
+SELECT TOP (1000) [customer_id]
+      ,[first_name]
+      ,[last_name]
+      ,[phone]
+      ,[email]
+      ,[street]
+      ,[city]
+      ,[state]
+      ,[zip_code]
+Into customers_Oakoand
+  FROM [PS49720].[sales].[customers]
+Where city like 'Oakland'
+---- Bài 2: Xóa khách hàng
+
+Delete [customers_Oakoand]
+Where first_name like 'Ka%'
+
+----- Bài 3: Sửa khách hàng
+Update [customers_Oakoand]
+    Set first_name = 'Peter'
+    Where first_name = 'Philip'
+----- 
