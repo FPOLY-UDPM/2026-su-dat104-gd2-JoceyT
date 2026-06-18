@@ -1,0 +1,98 @@
+Select 
+p.product_id
+, p.product_name
+, p.category_id
+, c.category_name
+From sales.order_items as s
+right join production.products as p
+on p.product_id=s.product_id
+join production.categories as c
+on c.category_id=p.category_id
+where s.product_id is null
+
+-------------
+
+Select c.category_id, c.category_name,
+		p.product_name, p.product_id
+From production.categories as c
+join production.products as p
+left join sales.order_items as oi
+on p.product_id=oi.product_id
+where oi.product_id is null
+order by c.category_name
+
+----------- Sp có giá hơn giá trung bình 
+
+Select 
+product_id, product_name, list_price
+From production.products as p
+Where list_price > (
+	Select avg (list_price)
+	From production.products)
+order by list_price Desc
+
+--------- BÀi 1: Số lần mua mỗi khách mà mua ít nhất 2 lần Trong 2018
+Select c.first_name + ''+c.last_name as TenKH, dm.Lan
+From sales.customers as c
+Join 
+	(Select customer_id, 
+		YEAR(k.order_date) as Nam,
+		Count(order_id) as Lan
+		From sales.orders as k
+		Where YEAR(k.order_date)=2018
+	Group by customer_id , YEAR(order_date)
+	Having count(order_id)>=2 ) as dm
+on c.customer_id=dm.customer_id
+
+------Bài 2:Tìm sản phẩm bán chạy nhất năm 2017.
+Select 
+	p.product_id 'Ma_SP'
+	,p.product_id 'Ten_SP'
+	,p.brand_id 'Ma_TH'
+	,p.category_id 'Ma_NHang'
+	,p.model_year 'Nam_SX'
+From PS49720.production.products as p
+Where p.product_id=
+	(select 
+	Top 1 product_id
+		From PS49720.sales.order_items as oi
+		Join PS49720.sales.orders as o
+		on oi.order_id=o.order_id
+		where Year(order_date)=2017
+		Group by product_id
+		Order by Sum(quantity)
+		)
+----C2
+
+Select * From PS49720.production.products
+Where product_id in
+	( Select product_id
+	From PS49720.sales.order_items oi
+	join PS49720.sales.orders o
+	on oi.order_id=o.order_id
+	Where YEAR(o.order_date) = 2017
+	Group by product_id
+	Having Sum(quantity) =
+		(Select Max([Tong_SL])
+		From 
+			( select Sum(quantity) as Tong_SL
+			From PS49720.sales.order_items oi
+			Join PS49720.sales.orders o
+			on oi.order_id=o.order_id
+			Where YEAR(o.order_date)=2017
+			Group by product_id
+			) as [SL_DaBan]
+		)
+	)
+
+----BÀI 3:Tìm tên cửa hàng có nhiều đơn đặt hàng nhất năm 2017.
+Select 
+s.store_name
+From PS49720.sales.stores s
+Where s.store_id= 
+		(Select Top 1 store_id
+		From PS49720.sales.orders o
+		Where YEAR(o.order_date)=2017
+		Group by store_id
+		Order by COUNT(o.order_id) 
+		)
