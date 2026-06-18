@@ -1,0 +1,80 @@
+
+Select * From
+(
+	Select
+	s.store_id
+	,s.state as ss
+	,s.city
+	From sales.stores as s
+	) as data_table
+
+Pivot 
+(
+	----Tính toán
+	Count (s.store_id)
+	----columns 
+	For ss in ([CA],[NY],[TX])
+	) as pivot_table
+
+--------- Số khách từng tiểu bang
+Select * From
+(
+	Select
+	c.customer_id
+	,c.state as cs
+	,c.city
+	From sales.customers as c
+	) as data_table
+
+Pivot 
+(
+	----Tính toán
+	Count (c.customer_id)
+	----columns 
+	For cs in ([CA],[NY],[TX])	
+	) as table_pivot
+
+-------- đơn hàng theo năm, từng store_id
+Select * From
+( Select 
+year(o.order_date) as d
+,o.order_id
+,o.store_id
+from sales.orders as o) data_table
+pivot
+(count (order_id)
+for d in ([2016],[2017],[2018]) )as pivot_table
+
+-------Số lượng đơn hàng theo năm, từng cửa hàng
+Select * 
+From 
+	(Select 
+		o.order_id
+		,year(o.order_date) as nam
+	From PS49720.sales.orders as o
+	join PS49720.sales.stores as s
+	on o.store_id = s.store_id
+	) as n
+Pivot 
+	(Count (order_id) 
+	For nam in ([2016],[2017],[2018])
+	) as pt
+-----
+Select *
+From 
+	( Select 
+			state
+			, customer_id
+			, Case 
+				When phone is not null 
+					Then 'CoDienThoai'
+					else 'KhongCoDienThoai'
+				End as TinhTrang
+		From PS49720.sales.customers 
+		) as tt
+Pivot 
+	( Count (customer_id)
+		For TinhTrang in ([CoDienThoai],[KhongCoDienThoai])
+	) as pt
+
+	From PS49720.sales.customers as c

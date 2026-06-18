@@ -31,3 +31,22 @@ Update [customers_Oakoand]
     Set first_name = 'Peter'
     Where first_name = 'Philip'
 ----- 
+Delete [customers_Oakoand]
+Where zip_code like '934603'
+----
+Insert Into [customers_Oakoand]
+	([customer_id],[first_name],[last_name],[phone],[email],[street],[city],[state],[zip_code])
+Values
+	(1,'Châu','Thị 1',0951111888,'1thichau@hcm.vn','Bạch Đằng','HCM','VN',1)
+,(2,'Châu','Thị 2',0952222888,'2thichau@hcm.vn','Vạn Kiếp','HCM','VN',1)
+,(3,'Châu','Thị 3',0953333888,'3thichau@hcm.vn','CMT8','HCM','VN',1)
+,(4,'Châu','Thị 4',0954444888,'4thichau@hcm.vn','Nguyễn Kiệm','HCM','VN',1)
+,(5,'Châu','Thị 5',095555888,'5thichau@hcm.vn','Khánh Hội','HCM','VN',1)
+,(6,'Châu','Thị 6',0956666888,'6thichau@hcm.vn','Bình Long','HCM','VN',1)
+,(7,'Châu','Thị 7',0957777888,'7thichau@hcm.vn','Nguyễn Oanh','HCM','VN',1)
+,(8,'Châu','Thị 8',0958888888,'8thichau@hcm.vn','Lê Lợi','HCM','VN',1)
+,(9,'Châu','Thị 9',0959999888,'9thichau@hcm.vn','Hồng Bàng','HCM','VN',1)
+,(10,'Châu','Thị 10',0950000888,'10thichau@hcm.vn','Paster','HCM','VN',1)
+
+Select *
+From customers_Oakoand
