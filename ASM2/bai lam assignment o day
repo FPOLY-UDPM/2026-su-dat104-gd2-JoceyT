@@ -1,0 +1,124 @@
+----1.	Cho biết danh sách vắng học (sinh viên vắng (TrangThai = 'A'))
+Select *
+From DiemDanh as dd
+Where dd.TrangThai = 'A'
+----2. Đếm số buổi vắng theo từng sinh viên
+Select 
+dd.MASV
+,Count(Case When dd.TrangThai = 'A' Then 1 End) as So_BVang
+From DiemDanh as dd
+Group By dd.MASV
+
+----3.	Thêm 1 dòng (record) vào bảng DiemDanh
+insert into dbo.LOP(ma_lop) Values ('SS0001')
+---
+INSERT INTO dbo.DiemDanh (MASV, NgayHoc, TrangThai, Lop)
+VALUES ('SV001', '2026-06-19', 'A', 'SS0001');
+---- Thêm 1 dòng (record) vào bảng KhoiPhucDiemDanh
+Insert Into dbo.KhoiPhucDiemDanh (MASV,Lop,NoiDung_SinhVien,NoiDung_GiangVien,Duyet)
+Values ('SV001','SS001',N'Muộn điểm danh','Đang xem xét',' ')
+
+-----4.	Cập nhật trạng thái điểm danh của 1 sinh viên
+Update dbo.DiemDanh
+Set TrangThai = 'P'
+Where MASV= 'SV001'
+	and Lop = 'SS0001'
+	AND NgayHoc = '2026-06-19'
+
+-----5.	Giảng viên duyệt yêu cầu khôi phục điểm danh
+Update	dbo.KhoiPhucDiemDanh
+Set Duyet = 1
+Where 
+	MASV= 'SV001' And Lop= 'SS0001'
+
+----ó. Xoa 1 yêu cầu khôi phục điểm danh theo MASV, Lop, và NgayHoc
+Delete From dbo.KhoiPhucDiemDanh
+Where MASV= 'SV001'
+
+----7.	Đếm số buổi vắng của từng sinh viên theo từng lớp
+Select
+dd.Lop
+,dd.MASV
+,Count(dd.TrangThai) as So_BVang
+From dbo.DiemDanh dd
+Where dd.TrangThai='A'
+Group by dd.Lop,dd.MASV
+
+-----8.	Tìm sinh viên có số buổi vắng > 3
+Select
+dd.Lop
+,dd.MASV
+,Count(dd.TrangThai) as So_BVang
+From dbo.DiemDanh dd
+Where dd.TrangThai='A'
+Group by dd.Lop,dd.MASV
+Having Count(dd.TrangThai) >3
+Order By So_BVang ASC
+-----9.	Liệt kê sinh viên có yêu cầu khôi phục điểm danh trùng với ngày KHÔNG bị vắng
+
+SELECT 
+    kp.MASV,
+    kp.Lop,
+    kp.NgayHoc,
+    dd.TrangThai AS TrangThaiHienTai
+FROM dbo.KhoiPhucDiemDanh kp
+INNER JOIN dbo.DiemDanh dd 
+    ON kp.MASV = dd.MaSV 
+    AND kp.Lop = dd.Lop 
+    AND kp.NgayHoc = dd.NgayHoc
+WHERE dd.TrangThai <> 'A'; 
+
+-----10.Cập nhật trạng thái điểm danh thành 'P' cho các sinh viên đã được duyệt khôi phục
+UPDATE dd
+SET dd.TrangThai = 'P'
+FROM dbo.DiemDanh dd
+INNER JOIN dbo.KhoiPhucDiemDanh kp 
+    ON dd.MASV = kp.MASV 
+    AND dd.Lop = kp.Lop 
+    AND dd.NgayHoc = kp.NgayHoc
+WHERE kp.Duyet = 1
+
+-----11.	Tìm sinh viên có số buổi vắng nhiều nhất 
+Select Top 1 dd.MASV
+,Count(dd.TrangThai) So_BVang
+From dbo.DiemDanh dd
+Group by dd.MASV
+
+----12.	Liệt kê tất cả điểm danh và yêu cầu khôi phục (nếu có) của lớp (ví dụ: DP21301)
+
+Select
+dd.Lop,dd.MASV,dd.NgayHoc,dd.TrangThai
+    ,(Case kp.Duyet
+        When 0 Then N'Khong Duyet'
+        When 1 Then N'Duyet'
+    End) as TT_Kp
+From dbo.DiemDanh dd
+Join dbo.ThongTinSV sv
+on sv.MASV= dd.MASV
+Left Join dbo.KhoiPhucDiemDanh kp
+on kp.MASV=sv.MASV
+And kp.Lop = dd.Lop
+Where dd.Lop='DP21301'
+Order by dd.NgayHoc, dd.MASV
+
+----13. Liệt kê các dòng điểm danh có yêu cầu khôi phục tương ứng
+
+
+----15.	Gắn nhãn trạng thái khôi phục điểm danh (nếu … thì …)
+
+
+Select*
+(Case 
+    When Duyet = 1 and NoiDung_GiangVien Is Not Null 
+        Then ' Đã duyệt và phản hồi'
+    When Duyet = 1 and 
+        (NoiDung_GiangVien Is Null 
+            Or
+        NoiDung_GiangVien = ' ') 
+        Then N'Đã duyệt- Chờ phản hồi'
+    When Duyet = 0 
+        Then N'Đang chờ xét'
+    Else N'KHÔNG XÁC ĐỊNH'
+End) As TT_Kp
+From dbo.KhoiPhucDiemDanh
+
