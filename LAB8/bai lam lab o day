@@ -1,0 +1,46 @@
+insert [tbl_MONHOC]
+	( [MaMon]
+	,[TenMonHoc]
+	--,[ThoiLuong]
+	--,[TinChi]
+	)
+Values 
+	('DAT222'
+	,N'My SQL'
+	--,18
+	--,3
+	)
+
+Insert [tbl_MONHOC] ([MaMon],[TenMonHoc]) Values ('DAT104',N'SQL Co Ban')
+
+-----------
+
+Insert Into [tbl_BANGDIEM]
+	([MaSv],[HoTen],[MaMon],[Lab1],[Lab2],[Ass])
+Values
+	('PS001','Nguyen Van A','DAT111',8.5,7.5,9.0)
+	,('PS003','Tran Be Ba','DAT111', 4.0,2.0,4.5)
+	,('PS007','Diep Van Vien','DAT111',8.5,9.0,9.5)
+
+---------- Cập Nhật
+
+Update [tbl_BANGDIEM]
+	set HoTen = N'Nguyen Van Nam'
+	Where MaSv = 'PS001'
+
+--------- Xóa Tên
+Delete [tbl_BANGDIEM]
+Where MaSv= 'PS001'
+
+
+--------- Cập nhật môn 
+Update [tbl_BANGDIEM]
+	Set MaMon = 'DAT104'
+	Where MaMon = 'Dat 111'
+
+----
+
+
+----
+Select *
+From tbl_BANGDIEM
